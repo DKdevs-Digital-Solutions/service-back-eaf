@@ -1,16 +1,12 @@
-services:
-  api:
-    build: .
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    depends_on:
-      - redis
-    restart: unless-stopped
+FROM node:20-alpine
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm i --omit=dev
+
+COPY src ./src
+COPY .env.example ./.env.example
+
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["npm", "start"]
